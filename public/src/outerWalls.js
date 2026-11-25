@@ -1,4 +1,4 @@
-import k from "./main.js";
+// import k from "./main.js";
 
 function createOuterWalls(wallLength,wallHeight,wallThickness){
 
