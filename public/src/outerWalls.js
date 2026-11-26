@@ -1,7 +1,6 @@
 // import k from "./main.js";
 
-function createOuterWalls(wallLength,wallHeight,wallThickness){
-
+function createOuterWalls(wallLength, wallHeight, wallThickness) {
     k.add([
         rect(wallLength, wallThickness),
         area(),
@@ -44,7 +43,7 @@ function createOuterWalls(wallLength,wallHeight,wallThickness){
 }
 
 let EXPORTS = {
-    createOuterWalls: createOuterWalls
-}
+    createOuterWalls: createOuterWalls,
+};
 
-export default EXPORTS
+export default EXPORTS;

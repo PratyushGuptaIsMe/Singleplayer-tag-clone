@@ -1,8 +1,10 @@
-
 import maps from "../maps.js";
 import outerWalls from "../outerWalls.js";
+import powerups from "../mechs/powerups.js";
 
-export default function game(options){
+export default function game(options) {
+    //#region config
+
     const whenStarted = elapsed;
     const timeForGame = options.gameLength;
     let timeLeft = timeForGame - elapsed + whenStarted;
@@ -36,9 +38,13 @@ export default function game(options){
     let currentTagCooldown = currentTagCooldownTop;
     let tagOnCooldown = true;
 
+    let powerupsOnScreen = 0;
+    let powerupSpawners = [];
+    powerupSpawners[0] = powerups.powerupSpawner(230, 340);
+
     let currentCameraScale = 0.56;
 
-    let loseScreenTransitionPos=vec2(gameWidth,0);
+    let loseScreenTransitionPos = vec2(gameWidth, 0);
     let endScreenColor = rgb("#fffb00");
 
     let wallLength = 2500;
@@ -60,6 +66,9 @@ export default function game(options){
     maps.addMap1();
     //adding 1 map (the default)
 
+    powerupSpawners = objectAdder(powerupSpawners);
+
+    //#endregion
 
     //#region players
     let player1;
@@ -157,7 +166,6 @@ export default function game(options){
     currentlyIt = players[Math.floor(Math.random() * playerCount)];
     currentlyIt.tag("it");
 
-
     for (let player of players) {
         player.vel.y = downwardVelocity;
 
@@ -178,24 +186,29 @@ export default function game(options){
 
     //#endregion
 
+    //#region on....
+
     onUpdate(() => {
         timeLeft = timeForGame - elapsed + whenStarted;
 
         if (timeLeft <= 0) {
             gameEnded = true;
-            setGravity(gravity+bonusGravityOnEnd)
+            setGravity(gravity + bonusGravityOnEnd);
         }
 
         if (gameEnded === true) {
             loser = currentlyIt;
         }
 
-
-
-        if(loseScreenTransitionPos.x.toFixed(0)==0&& loseScreenTransitionPos.y.toFixed(0)==0
-){
-                        go("lose_screen",{loser:loser,endScreenColor:endScreenColor,gameOptions:options})
-
+        if (
+            loseScreenTransitionPos.x.toFixed(0) == 0 &&
+            loseScreenTransitionPos.y.toFixed(0) == 0
+        ) {
+            go("lose_screen", {
+                loser: loser,
+                endScreenColor: endScreenColor,
+                gameOptions: options,
+            });
         }
 
         currentTagCooldown -= dt();
@@ -227,8 +240,7 @@ export default function game(options){
                 smallestY = point.y;
             }
         }
-                setCameraControls();
-
+        setCameraControls();
     });
 
     onDraw(() => {
@@ -273,20 +285,22 @@ export default function game(options){
 
         if (gameEnded && timeLeft <= 0.5) {
             let transitionSpeed = 0.05;
-            loseScreenTransitionPos.x = lerp(loseScreenTransitionPos.x,0,transitionSpeed);
+            loseScreenTransitionPos.x = lerp(
+                loseScreenTransitionPos.x,
+                0,
+                transitionSpeed,
+            );
             drawRect({
-                width:gameWidth,
-                height:gameHeight,
-                pos:loseScreenTransitionPos,
-color: endScreenColor       ,     fixed:true
-            })
+                width: gameWidth,
+                height: gameHeight,
+                pos: loseScreenTransitionPos,
+                color: endScreenColor,
+                fixed: true,
+            });
         }
 
-
-
-
         if (debug.inspect === false) {
-            return
+            return;
         }
 
         drawPolygon({
@@ -322,18 +336,37 @@ color: endScreenColor       ,     fixed:true
         currentlyIt = b;
     });
 
-    function processPlayer(player) {
+    onCollideUpdate("powerupSpawner", "player", (a, b, col) => {
+        a.pickupPowerup();
+        processPowerupsForPlayer(a, b);
+    });
 
-            if (player.isGrounded()) {
-                player.airJumpsLeft = airJumps;
-            }
-            playerMovement(player);
-            playerPoints.push(vec2(player.pos.x, player.pos.y));
-            playerPoints.push(vec2(player.pos.x + PLAYER_SIZE, player.pos.y));
-            playerPoints.push(
-                vec2(player.pos.x + PLAYER_SIZE, player.pos.y + PLAYER_SIZE),
-            );
-            playerPoints.push(vec2(player.pos.x, player.pos.y + PLAYER_SIZE));
+    //#endregion
+
+    //#region functions
+
+    function objectAdder(array) {
+        let addedObjArray = [];
+        array.forEach((obj) => {
+            let addedObj = add(obj);
+            addedObjArray.push(addedObj);
+        });
+        return addedObjArray;
+    }
+
+    function processPowerupsForPlayer(spawner, player) {}
+
+    function processPlayer(player) {
+        if (player.isGrounded()) {
+            player.airJumpsLeft = airJumps;
+        }
+        playerMovement(player);
+        playerPoints.push(vec2(player.pos.x, player.pos.y));
+        playerPoints.push(vec2(player.pos.x + PLAYER_SIZE, player.pos.y));
+        playerPoints.push(
+            vec2(player.pos.x + PLAYER_SIZE, player.pos.y + PLAYER_SIZE),
+        );
+        playerPoints.push(vec2(player.pos.x, player.pos.y + PLAYER_SIZE));
     }
 
     function playerMovement(player) {
@@ -394,8 +427,7 @@ color: endScreenColor       ,     fixed:true
 
         setCamPos(camPositionX, camPositionY);
         setCamScale(currentCameraScale, currentCameraScale);
-    }}
+    }
 
-// export default {
-//     game:game
-// }
+    //#endregion
+}

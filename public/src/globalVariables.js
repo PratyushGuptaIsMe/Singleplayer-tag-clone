@@ -1,4 +1,3 @@
-
 window.gameWidth = width();
 window.gameHeight = height();
 onResize(() => {

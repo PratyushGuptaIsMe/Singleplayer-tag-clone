@@ -1,5 +1,3 @@
-
-
 export default function main_menu() {
     setBackground("#2299e3");
 
@@ -17,13 +15,13 @@ export default function main_menu() {
     let limits = {
         players: {
             upper: 4,
-            lower: 2
+            lower: 2,
         },
         gameLength: {
             upper: 185,
-            lower: 15
-        }
-    }
+            lower: 15,
+        },
+    };
 
     add([
         text("Players", { size: 58, font: "Lilita One", width: "250" }),
@@ -74,26 +72,26 @@ export default function main_menu() {
         if (options.players > 2) {
             options.players--;
         }
-        updateButtons()
+        updateButtons();
     });
     onClick("p>", () => {
         if (options.players < 4) {
             options.players++;
-        }        updateButtons()
-
+        }
+        updateButtons();
     });
 
     onClick("g<", () => {
         if (options.gameLength > 15) {
             options.gameLength -= 5;
-        }        updateButtons()
-
+        }
+        updateButtons();
     });
     onClick("g>", () => {
         if (options.gameLength < 185) {
             options.gameLength += 5;
-        }        updateButtons()
-
+        }
+        updateButtons();
     });
     updateButtons();
 
@@ -137,29 +135,28 @@ export default function main_menu() {
     function updateButtons() {
         let greyedOpacityValue = 0.4;
 
-        if(options.players === limits.players.upper) {
-            get("p>")[0].opacity=greyedOpacityValue
+        if (options.players === limits.players.upper) {
+            get("p>")[0].opacity = greyedOpacityValue;
         } else {
-            get("p>")[0].opacity=1
+            get("p>")[0].opacity = 1;
         }
-        if(options.players === limits.players.lower) {
-            get("p<")[0].opacity=greyedOpacityValue
+        if (options.players === limits.players.lower) {
+            get("p<")[0].opacity = greyedOpacityValue;
         } else {
-            get("p<")[0].opacity=1
+            get("p<")[0].opacity = 1;
         }
-        if(options.gameLength === limits.gameLength.upper) {
-            get("g>")[0].opacity=greyedOpacityValue
+        if (options.gameLength === limits.gameLength.upper) {
+            get("g>")[0].opacity = greyedOpacityValue;
         } else {
-            get("g>")[0].opacity=1
+            get("g>")[0].opacity = 1;
         }
-        if(options.gameLength === limits.gameLength.lower) {
-            get("g<")[0].opacity=greyedOpacityValue
+        if (options.gameLength === limits.gameLength.lower) {
+            get("g<")[0].opacity = greyedOpacityValue;
         } else {
-            get("g<")[0].opacity=1
+            get("g<")[0].opacity = 1;
         }
 
-
-        options.players
-        options.gameLength
+        options.players;
+        options.gameLength;
     }
 }
