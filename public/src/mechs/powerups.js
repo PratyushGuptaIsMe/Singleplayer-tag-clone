@@ -18,35 +18,62 @@ function spawnPowerups() {
         id: "spawnPowerups",
         isPowerupThere: false,
         isPowerupSpawning: false,
-        powerup: {},
-
+        drawnPowerup: {},
         powerupTypes: [
             {
                 color: "#ff0000",
+                buffName: "speed",
+                giveBuff(player) {
+                    player.buffProperties.speed.inEffect = true;
+
+                    player.bonusSpeedBoost += 500;
+                    wait(10, () => {
+                        player.bonusSpeedBoost -= 500;
+                        player.buffProperties.speed.inEffect = false;
+                    });
+                    debug.log("picked up speed");
+                },
             },
             {
-                color: "#c8ff00",
+                color: "#00ff37",
+                buffName: "invincibility",
+                giveBuff(player) {
+                    debug.log("picked up invincibility");
+                    player.buffProperties.invincibility.inEffect = true;
+                    wait(10, () => {
+                        player.buffProperties.invincibility.inEffect = false;
+                    });
+                },
             },
             {
                 color: "#0400ff",
-            },
-            {
-                color: "#15ff00",
+                buffName: "jump",
+                giveBuff(player) {
+                    debug.log("picked up jump");
+                    player.buffProperties.jump.inEffect = true;
+
+                    player.jumpForce += 200;
+                    wait(10, () => {
+                        player.jumpForce -= 200;
+                        player.buffProperties.jump.inEffect = false;
+                    });
+                },
             },
         ],
+        powerup: {},
         spawnPowerup() {
             debug.log("spawned powerup");
 
-            let randomPowerupType =
+            this.powerup =
                 this.powerupTypes[
                     Math.floor(Math.random() * this.powerupTypes.length)
                 ];
 
-            this.powerup = this.add([
+            this.drawnPowerup = this.add([
                 rect(10, 10),
                 pos(0, 0),
                 anchor("center"),
-                color(randomPowerupType.color),
+                color(this.powerup.color),
             ]);
         },
         update() {
@@ -57,7 +84,7 @@ function spawnPowerups() {
                 this.isPowerupSpawning = true;
                 wait(3, () => {
                     this.isPowerupThere = true;
-                    this.isPowerupSpawing = false;
+                    this.isPowerupSpawning = false;
 
                     this.spawnPowerup();
                 });
@@ -67,8 +94,8 @@ function spawnPowerups() {
             if (this.isPowerupThere === false) {
                 return;
             }
-
-            destroy(this.powerup);
+            destroy(this.drawnPowerup);
+            this.powerup = {};
             this.isPowerupThere = false;
             this.isPowerupSpawning = false;
         },

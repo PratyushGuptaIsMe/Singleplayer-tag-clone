@@ -71,6 +71,7 @@ export default function game(options) {
     //#endregion
 
     //#region players
+
     let player1;
     let player2;
     let player3;
@@ -96,6 +97,19 @@ export default function game(options) {
                 right: "right",
             },
             airJumpsLeft: airJumps,
+            bonusSpeedBoost: 0,
+            buffProperties: {
+                speed: {
+                    inEffect: false,
+                },
+                jump: {
+                    inEffect: false,
+                    bonusJumpHeightCurrently: 0,
+                },
+                invincibility: {
+                    inEffect: false,
+                },
+            },
         },
     ]);
 
@@ -115,6 +129,19 @@ export default function game(options) {
                 right: "d",
             },
             airJumpsLeft: airJumps,
+            bonusSpeedBoost: 0,
+            buffProperties: {
+                speed: {
+                    inEffect: false,
+                },
+                jump: {
+                    inEffect: false,
+                    bonusJumpHeightCurrently: 0,
+                },
+                invincibility: {
+                    inEffect: false,
+                },
+            },
         },
     ]);
     players.push(player1);
@@ -137,6 +164,19 @@ export default function game(options) {
                     right: "l",
                 },
                 airJumpsLeft: airJumps,
+                bonusSpeedBoost: 0,
+                buffProperties: {
+                    speed: {
+                        inEffect: false,
+                    },
+                    jump: {
+                        inEffect: false,
+                        bonusJumpHeightCurrently: 0,
+                    },
+                    invincibility: {
+                        inEffect: false,
+                    },
+                },
             },
         ]);
         players.push(player3);
@@ -158,6 +198,19 @@ export default function game(options) {
                     right: "h",
                 },
                 airJumpsLeft: airJumps,
+                bonusSpeedBoost: 0,
+                buffProperties: {
+                    speed: {
+                        inEffect: false,
+                    },
+                    jump: {
+                        inEffect: false,
+                        bonusJumpHeightCurrently: 0,
+                    },
+                    invincibility: {
+                        inEffect: false,
+                    },
+                },
             },
         ]);
         players.push(player4);
@@ -328,6 +381,10 @@ export default function game(options) {
             return;
         }
 
+        if (b.buffProperties.invincibility.inEffect === true) {
+            return;
+        }
+
         tagOnCooldown = true;
         currentTagCooldown = currentTagCooldownTop;
 
@@ -336,9 +393,14 @@ export default function game(options) {
         currentlyIt = b;
     });
 
-    onCollideUpdate("powerupSpawner", "player", (a, b, col) => {
-        a.pickupPowerup();
-        processPowerupsForPlayer(a, b);
+    onCollideUpdate("powerupSpawner", "player", (spawner, player, col) => {
+        let powerup = spawner.powerup;
+
+        if (Object.keys(powerup).length > 0) {
+            powerup.giveBuff(player);
+        }
+        
+        spawner.pickupPowerup();
     });
 
     //#endregion
@@ -353,8 +415,6 @@ export default function game(options) {
         });
         return addedObjArray;
     }
-
-    function processPowerupsForPlayer(spawner, player) {}
 
     function processPlayer(player) {
         if (player.isGrounded()) {
@@ -379,6 +439,7 @@ export default function game(options) {
         if (player.is("it")) {
             actualMovementSpeed = movementSpeed + itPlayerSpeedBoost;
         }
+        actualMovementSpeed += player.bonusSpeedBoost;
         if (isKeyDown(mk.right)) {
             player.move(actualMovementSpeed, 0);
         }
